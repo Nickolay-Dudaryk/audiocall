@@ -88,6 +88,11 @@ const App = () => {
     }
   }
 
+  const nextBtnClickHandler = () => {
+    setUserNotAnswer([...userNotAnswer, correctAnswer]);
+    nextLevel();
+  }
+
   const userClickHandler = (option) => {
     option === correctAnswer
       ? setUserCorrectAnswers([...userCorrectAnswers, option])
@@ -98,17 +103,19 @@ const App = () => {
     }
   }
 
+  // IF RUN OUT OF TIME => NEXT LEVEL
   if (timerCounter === 0 && isGameOn) {
     setUserNotAnswer([...userNotAnswer, correctAnswer])
     nextLevel()
   }
 
+  // RENDER SCREENS
   let screen;
   if (isGameOn && stepsToFinish > 0) {
     screen = (
       <>
         <Timer timerCounter={timerCounter} />
-        <button onClick={() => nextLevel()}>next</button>
+        <button onClick={() => nextBtnClickHandler()}>next</button>
         <ChoiceButtons
           userAnswerOptions={userAnswerOptions}
           correctAnswer={correctAnswer}
