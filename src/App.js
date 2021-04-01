@@ -1,37 +1,33 @@
 import React from 'react';
 // components
-import AudioPlayer from './components/AudioPlayer';
-import ChoiseButtons from './components/ChoiseButtons';
+import ChoiceButtons from './components/ChoiceButtons';
 import Timer from './components/Timer';
+import StartScreen from './components/StartScreen';
+import FinishScreen from './components/FinishScreen';
 // custom functions
-import { fillAnArray, findCorrectAnswer } from './utils';
+import { fillAnArray, getRandomItem, shuffleArr } from './utils';
 // hardcode db
 import  book1 from './hardcodeDb';
 
+
 const App = () => {
-  const [audioFile, setAudioFile] = React.useState('');
   const [userAnswerOptions, setUserAnswerOptions] = React.useState([]);
   const [lengthOfAnswerOptions] = React.useState(5);
   const [correctAnswer, setCorrectAnswer] = React.useState('');
   const [timerCounter, setTimerCounter] = React.useState(5);
+  const [isGameOn, setIsGameOn] = React.useState(false);
+  const [userCorrectAnswers, setUserCorrectAnswers] = React.useState([]);
+  const [userWrongAnswers, setUserWrongAnswers] = React.useState([]);
+  const [userNotAnswer, setUserNotAnswer] = React.useState([]);
+  const [stepsToFinish, setStepsToFinish] = React.useState(5);
 
-  const play = () => {
-    // const randomObj = findCorrectAnswer(book1);
-    // setCorrectAnswer(randomObj.wordTranslate);
-    // setAudioFile(randomObj.audio);
+  const audioPlay = (audioFile) => {
+    const audio = new Audio(
+      `https://raw.githubusercontent.com/Nickolay-Dudaryk/rslang-data/master/files/${audioFile}`
+    );
 
-    // const a = [];
-    // const b = fillAnArray(book1, lengthOfAnswerOptions)
-    // a.push(correctAnswer)
-    // a.push(b);
-    // setUserAnswerOptions(a)
-  }
-
-  // play();
-
-  console.log(audioFile);
-  // console.log(userAnswerOptions);
-  console.log(correctAnswer);
+    audio.play();
+  };
 
   React.useEffect(() => {
     let timer;
@@ -47,11 +43,95 @@ const App = () => {
     };
   }, [timerCounter]);
 
+  const getArrOfUserOptions = (duplicate) => {
+    let restOptions = fillAnArray(book1, lengthOfAnswerOptions - 1, duplicate);
+    let arr = [...restOptions];
+
+    return arr;
+  }
+
+  const startGame = () => {
+    setStepsToFinish(5);
+    setIsGameOn(true);
+    const randomObj = getRandomItem(book1);
+    setCorrectAnswer(randomObj.wordTranslate);
+    setUserCorrectAnswers([]);
+    setUserWrongAnswers([]);
+    setUserNotAnswer([]);
+    setTimerCounter(5);
+    audioPlay(randomObj.audio);
+    let userAnswersOpt = [
+      randomObj.wordTranslate,
+      ...getArrOfUserOptions(randomObj.wordTranslate)
+    ];
+    let shuffledUserAnswersOpt = (shuffleArr(userAnswersOpt));
+    setUserAnswerOptions(shuffledUserAnswersOpt);
+  }
+
+  const nextLevel = () => {
+    if (stepsToFinish > 1 && isGameOn) {
+      setTimerCounter(5);
+      setStepsToFinish(c => c - 1);
+      const randomObj = getRandomItem(book1);
+      setCorrectAnswer(randomObj.wordTranslate);
+      
+      audioPlay(randomObj.audio);
+      let userAnswersOpt = [
+        randomObj.wordTranslate,
+        ...getArrOfUserOptions(randomObj.wordTranslate)
+      ];
+      let shuffledUserAnswersOpt = (shuffleArr(userAnswersOpt));
+      setUserAnswerOptions(shuffledUserAnswersOpt);
+    } else {
+      setIsGameOn(false)
+      return
+    }
+  }
+
+  const userClickHandler = (option) => {
+    option === correctAnswer
+      ? setUserCorrectAnswers([...userCorrectAnswers, option])
+      : setUserWrongAnswers([...userWrongAnswers, option]);
+
+    if (stepsToFinish > 0) {
+      nextLevel();
+    }
+  }
+
+  if (timerCounter === 0 && isGameOn) {
+    setUserNotAnswer([...userNotAnswer, correctAnswer])
+    nextLevel()
+  }
+
+  let screen;
+  if (isGameOn && stepsToFinish > 0) {
+    screen = (
+      <>
+        <Timer timerCounter={timerCounter} />
+        <button onClick={() => nextLevel()}>next</button>
+        <ChoiceButtons
+          userAnswerOptions={userAnswerOptions}
+          correctAnswer={correctAnswer}
+          userClickHandler={userClickHandler}
+        />
+      </>
+    )
+  } else if (!isGameOn && stepsToFinish > 1) {
+    screen = <StartScreen startGame={startGame} />;
+  } else if (stepsToFinish === 1) {
+    screen = (
+      <FinishScreen
+        startGame={startGame}
+        userCorrectAnswers={userCorrectAnswers}
+        userNotAnswer={userNotAnswer}
+        userWrongAnswers={userWrongAnswers}
+      />
+    )
+  }
+
   return (
     <>
-      <AudioPlayer audioFile={'01_0001.mp3'} />
-      <Timer timerCounter={timerCounter} />
-      <ChoiseButtons />
+      {screen}
     </>
   )
 }
