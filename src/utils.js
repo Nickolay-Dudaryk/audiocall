@@ -16,4 +16,4 @@ export const fillAnArray = (arr, maxLength, duplicate) => {
   }
   
   return resultArr;
-}
+};

@@ -1,15 +1,16 @@
 import React from 'react';
 import StartGameBtn from './StartGameBtn';
 
-const FinishScreen = ({ startGame, userCorrectAnswers, userNotAnswer, userWrongAnswers }) => {
-  return (
-    <div>
-      <div>правильно: {userCorrectAnswers.toString()}</div>
-      <div>нет ответа: {userNotAnswer.toString()}</div>
-      <div>ошибки: {userWrongAnswers.toString()}</div>
-      <StartGameBtn startGame={startGame} />
-    </div>
-  )
-}
+const FinishScreen = ({
+  startGame, userCorrectAnswers, userNotAnswer, userWrongAnswers
+}) => (
+  <>
+    <p>правильно: {userCorrectAnswers.toString().split(',').join(', ')}</p>
+    <p>нет ответа: {userNotAnswer.toString().split(',').join(', ')}</p>
+    <p>ошибки: {userWrongAnswers.toString().split(',').join(', ')}</p>
+    <StartGameBtn startGame={startGame} />
+  </>
+);
 
-export default FinishScreen
+
+export default FinishScreen;

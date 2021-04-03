@@ -7,7 +7,7 @@ import FinishScreen from './components/FinishScreen';
 // custom functions
 import { fillAnArray, getRandomItem, shuffleArr } from './utils';
 // hardcode db
-import  book1 from './hardcodeDb';
+import book1 from './hardcodeDb';
 
 
 const App = () => {
@@ -21,6 +21,7 @@ const App = () => {
   const [userNotAnswer, setUserNotAnswer] = React.useState([]);
   const [stepsToFinish, setStepsToFinish] = React.useState(5);
 
+
   const audioPlay = (audioFile) => {
     const audio = new Audio(
       `https://raw.githubusercontent.com/Nickolay-Dudaryk/rslang-data/master/files/${audioFile}`
@@ -28,6 +29,7 @@ const App = () => {
 
     audio.play();
   };
+
 
   React.useEffect(() => {
     let timer;
@@ -43,22 +45,22 @@ const App = () => {
     };
   }, [timerCounter]);
 
-  const getArrOfUserOptions = (duplicate) => {
-    let restOptions = fillAnArray(book1, lengthOfAnswerOptions - 1, duplicate);
-    let arr = [...restOptions];
 
-    return arr;
-  }
+  const getArrOfUserOptions = (duplicate) => {
+    return fillAnArray(book1, lengthOfAnswerOptions - 1, duplicate);
+  };
+
 
   const startGame = () => {
     setStepsToFinish(5);
     setIsGameOn(true);
-    const randomObj = getRandomItem(book1);
-    setCorrectAnswer(randomObj.wordTranslate);
     setUserCorrectAnswers([]);
     setUserWrongAnswers([]);
     setUserNotAnswer([]);
     setTimerCounter(5);
+
+    const randomObj = getRandomItem(book1);
+    setCorrectAnswer(randomObj.wordTranslate);
     audioPlay(randomObj.audio);
     let userAnswersOpt = [
       randomObj.wordTranslate,
@@ -68,13 +70,14 @@ const App = () => {
     setUserAnswerOptions(shuffledUserAnswersOpt);
   }
 
+
   const nextLevel = () => {
     if (stepsToFinish > 1 && isGameOn) {
       setTimerCounter(5);
       setStepsToFinish(c => c - 1);
+
       const randomObj = getRandomItem(book1);
       setCorrectAnswer(randomObj.wordTranslate);
-      
       audioPlay(randomObj.audio);
       let userAnswersOpt = [
         randomObj.wordTranslate,
@@ -83,15 +86,17 @@ const App = () => {
       let shuffledUserAnswersOpt = (shuffleArr(userAnswersOpt));
       setUserAnswerOptions(shuffledUserAnswersOpt);
     } else {
-      setIsGameOn(false)
-      return
+      setIsGameOn(false);
+      return;
     }
-  }
+  };
+
 
   const nextBtnClickHandler = () => {
     setUserNotAnswer([...userNotAnswer, correctAnswer]);
     nextLevel();
-  }
+  };
+
 
   const userClickHandler = (option) => {
     option === correctAnswer
@@ -101,13 +106,15 @@ const App = () => {
     if (stepsToFinish > 0) {
       nextLevel();
     }
-  }
+  };
+
 
   // IF RUN OUT OF TIME => NEXT LEVEL
   if (timerCounter === 0 && isGameOn) {
-    setUserNotAnswer([...userNotAnswer, correctAnswer])
-    nextLevel()
-  }
+    setUserNotAnswer([...userNotAnswer, correctAnswer]);
+    nextLevel();
+  };
+
 
   // RENDER SCREENS
   let screen;
@@ -134,13 +141,14 @@ const App = () => {
         userWrongAnswers={userWrongAnswers}
       />
     )
-  }
+  };
+
 
   return (
     <>
       {screen}
     </>
   )
-}
+};
 
 export default App;
