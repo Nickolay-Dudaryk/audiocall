@@ -3,25 +3,23 @@ import React from 'react';
 const ChoiceButtons = ({ userAnswerOptions, userClickHandler }) => {
 
   const RenderChoiceBtns = () => {
-    return (userAnswerOptions.map((option) => {
-      return (
-        <button
-          onClick={() => userClickHandler(option)}
-          className="choice-button"
-          key={option}
-        >
-          {option}
-        </button>
-        )
-    }))
-  }
+    return (userAnswerOptions.map((option) => (
+      <button
+        onClick={() => userClickHandler(option)}
+        className="choice-button"
+        key={option}
+      >
+        {option}
+      </button>
+    )));
+  };
 
 
   return (
     <div className="choice-buttons">
       <RenderChoiceBtns />
     </div>
-  )
-}
+  );
+};
 
-export default ChoiceButtons
+export default ChoiceButtons;
